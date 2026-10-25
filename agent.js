@@ -11,23 +11,32 @@ export async function analyzeMelody(rawNotes) {
     };
   }
 
-  const prompt = `Tu es un agent expert en dictée musicale et musicologie.
-Analyse ce tableau de notes brutes chantées et leurs durées exactes en secondes :
+  const prompt = `Tu es un musicologue et professeur de solfège expert.
+Analyse cette suite chronologique de notes chantées avec leur durée exacte en secondes :
 ${JSON.stringify(rawNotes)}
 
-Tâches :
-1. Détermine le tempo le plus probable (BPM) et la signature rythmique (ex: 4/4).
-2. Convertis les durées relatives en figures rythmiques officielles (Croche, Noire, Blanche, Double-croche...).
-3. Rédige une réponse synthétique à voix haute destinée à être lue par un synthétiseur vocal (max 2 phrases).
+Directives strictes pour la dictée :
+1. ANALYSE DU TEMPO :
+   - Trouve le tempo le plus naturel (BPM entre 80 et 140).
+   - Calcule la durée d'une pulsion (ex: à 120 BPM, 1 noire = 0.5s, 1 croche = 0.25s, 1 blanche = 1.0s).
+2. QUANTIFICATION DU RYTHME :
+   - Compare chaque durée du tableau à la valeur théorique la plus proche (Double-croche, Croche, Noire, Blanche).
+   - Arrondis les imprécisions de chant pour coller à la mesure.
+3. HARMONISATION DES NOTES :
+   - Corrige les légères faussetés (ex: si l'ensemble suggère une gamme de Do majeur, ajuste un Do# isolé en Do).
+4. RETOUR VOCAL (speechText) :
+   - Rédige un retour ultra-clair à voix haute en français.
+   - Énonce la signature rythmique, le tempo, puis énumère chaque note avec sa figure (ex: "Mélodie en 4/4 à 100 BPM. Tu as chanté : Noire Do4, Croche Mi4, Blanche Sol4.").
 
-Réponds STRICTEMENT sous forme d'un objet JSON valide avec la structure exacte suivante :
+Réponds STRICTEMENT au format JSON :
 {
-  "bpm": 120,
+  "bpm": 100,
   "timeSignature": "4/4",
-  "speechText": "Mélodie détectée en 4/4 à 120 BPM. Croche La 4, Noire Do 5, Blanche Sol 4.",
+  "speechText": "Mélodie en 4/4 à 100 BPM. Tu as chanté une noire Do 4, une croche Mi 4 et une blanche Sol 4.",
   "notes": [
-    {"note": "La4", "figure": "Croche"},
-    {"note": "Do5", "figure": "Noire"}
+    {"note": "Do4", "figure": "Noire"},
+    {"note": "Mi4", "figure": "Croche"},
+    {"note": "Sol4", "figure": "Blanche"}
   ]
 }`;
 
