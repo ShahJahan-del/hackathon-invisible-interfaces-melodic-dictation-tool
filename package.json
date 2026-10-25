@@ -1,0 +1,31 @@
+{
+  "name": "hackathon-invisible-interfaces-melodic-dictation-tool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite --host"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShahJahan-del/hackathon-invisible-interfaces-melodic-dictation-tool.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ShahJahan-del/hackathon-invisible-interfaces-melodic-dictation-tool/issues"
+  },
+  "homepage": "https://github.com/ShahJahan-del/hackathon-invisible-interfaces-melodic-dictation-tool#readme",
+  "dependencies": {
+    "@google/genai": "^2.31.0",
+    "openai": "^7.43.0",
+    "pitchfinder": "^2.3.4",
+    "vite": "^8.3.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^2.3.0"
+  }
+}
