@@ -1,10 +1,16 @@
-import { GoogleGenAI } from '@google/genai';
-
 // Utilise la clé API Gemini définie dans ton environnement ou collée ici
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-const ai = new GoogleGenAI({ apiKey });
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY
 
 export async function analyzeMelody(rawNotes) {
+  // Détection si la clé est absente
+  if (!apiKey) {
+    console.error("ERREUR : La variable VITE_GEMINI_API_KEY n'est pas définie dans .env");
+    return {
+      speechText: "Erreur : La clé API est manquante. Redémarre le serveur Vite.",
+      notes: []
+    };
+  }
+
   const prompt = `Tu es un agent expert en dictée musicale et musicologie.
 Analyse ce tableau de notes brutes chantées et leurs durées exactes en secondes :
 ${JSON.stringify(rawNotes)}
@@ -25,23 +31,42 @@ Réponds STRICTEMENT sous forme d'un objet JSON valide avec la structure exacte 
   ]
 }`;
 
+// Utilisation du modèle gemini-2.5-flash via la route REST standard
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json', // Force le retour au format JSON propre
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
       },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: prompt }]
+        }],
+        generationConfig: {
+          responseMimeType: 'application/json'
+        }
+      })
     });
 
-    const responseText = response.text;
-    console.log("Réponse brute Gemini :", responseText);
+    if (!response.ok) {
+      const errorJson = await response.json();
+      console.error("Détails erreur Google API :", errorJson);
+      throw new Error(`API Google renvoie l'erreur ${response.status}`);
+    }
 
-    return JSON.parse(responseText);
+    const data = await response.json();
+    let jsonText = data.candidates[0].content.parts[0].text;
+
+    // Nettoyage au cas où l'IA entoure le JSON de balises ```json
+    jsonText = jsonText.replace(/```json/g, '').replace(/```/g, '').trim();
+
+    return JSON.parse(jsonText);
   } catch (error) {
     console.error("Erreur Agent IA Gemini:", error);
     return {
-      speechText: "Erreur lors de l'analyse par l'agent IA.",
+      speechText: "Désolé, la connexion avec l'agent de dictée a échoué. Vérifie la clé API.",
       notes: []
     };
   }
